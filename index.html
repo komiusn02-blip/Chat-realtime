@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💬 Chat Realtime Firebase</title>
+<style>
+  body{font-family:'Segoe UI',sans-serif;background:#e8f0fe;margin:0;padding:0;}
+  header{background:#2563eb;color:white;padding:15px;text-align:center;font-size:1.3em;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+  #chat-container{width:90%;max-width:600px;margin:20px auto;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.15);overflow:hidden;display:flex;flex-direction:column;}
+  #messages{flex:1;padding:15px;height:60vh;overflow-y:auto;}
+  .msg{margin:6px 0;padding:10px;border-radius:10px;max-width:75%;word-wrap:break-word;}
+  .me{background:#dcf8c6;align-self:flex-end;text-align:right;}
+  .other{background:#f1f0f0;align-self:flex-start;}
+  #input-area{display:flex;padding:10px;background:#f9fafb;border-top:1px solid #ddd;}
+  #username,#message{border:1px solid #ccc;border-radius:6px;padding:8px;outline:none;}
+  #username{width:25%;margin-right:5px;}
+  #message{flex:1;}
+  #sendBtn{background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;margin-left:5px;cursor:pointer;}
+  #sendBtn:hover{background:#1d4ed8;}
+</style>
+</head>
+<body>
+
+<header>💬 Chat Realtime Firebase</header>
+
+<div id="chat-container">
+  <div id="messages"></div>
+  <div id="input-area">
+    <input type="text" id="username" placeholder="Nama Anda">
+    <input type="text" id="message" placeholder="Ketik pesan...">
+    <button id="sendBtn">Kirim</button>
+  </div>
+</div>
+
+<!-- Firebase Realtime -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+  // 🔥 Firebase Config (sudah aktif publik)
+  const firebaseConfig = {
+    apiKey: "AIzaSyD5xCQYLUGnbuS1v5wHn1-k5uovAd8lKe4",
+    authDomain: "chat-riletime.firebaseapp.com",
+    databaseURL: "https://chat-riletime-default-rtdb.firebaseio.com/",
+    projectId: "chat-riletime",
+    storageBucket: "chat-riletime.firebasestorage.app",
+    messagingSenderId: "467675334077",
+    appId: "1:467675334077:web:7f0a33e0a96b2b84758e12"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const chatRef = ref(db, "messages");
+
+  const sendBtn = document.getElementById("sendBtn");
+  sendBtn.addEventListener("click", () => {
+    const name = document.getElementById("username").value.trim();
+    const msg = document.getElementById("message").value.trim();
+    if (!name || !msg) return alert("Isi nama dan pesan!");
+    push(chatRef, { name, msg, time: new Date().toLocaleTimeString() });
+    document.getElementById("message").value = "";
+  });
+
+  const messages = document.getElementById("messages");
+  onChildAdded(chatRef, (snapshot) => {
+    const data = snapshot.val();
+    const div = document.createElement("div");
+    div.classList.add("msg");
+    div.classList.add(data.name === document.getElementById("username").value ? "me" : "other");
+    div.innerHTML = `<strong>${data.name}</strong><br>${data.msg}<br><small>${data.time}</small>`;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  });
+</script>
+
+</body>
+</html>

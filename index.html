@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💬 Chat Realtime Firebase</title>
+<title>💬 Chat Realtime + Story Firebase</title>
 <style>
   body{font-family:'Segoe UI',sans-serif;background:#e8f0fe;margin:0;padding:0;}
   header{background:#2563eb;color:white;padding:15px;text-align:center;font-size:1.3em;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+  #menu{display:flex;justify-content:center;gap:10px;margin-top:10px;}
+  #menu button{background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;cursor:pointer;}
+  #menu button:hover{background:#1e40af;}
   #chat-container{width:90%;max-width:600px;margin:20px auto;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.15);overflow:hidden;display:flex;flex-direction:column;}
-  #messages{flex:1;padding:15px;height:60vh;overflow-y:auto;}
+  #messages{flex:1;padding:15px;height:50vh;overflow-y:auto;}
   .msg{margin:6px 0;padding:10px;border-radius:10px;max-width:75%;word-wrap:break-word;}
   .me{background:#dcf8c6;align-self:flex-end;text-align:right;}
   .other{background:#f1f0f0;align-self:flex-start;}
@@ -18,11 +21,24 @@
   #message{flex:1;}
   #sendBtn{background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;margin-left:5px;cursor:pointer;}
   #sendBtn:hover{background:#1d4ed8;}
+
+  /* Story Modal */
+  #storyModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:center;z-index:100;}
+  #storyContent{background:white;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;position:relative;}
+  #storyList{margin-top:10px;max-height:300px;overflow-y:auto;text-align:left;}
+  .story-item{background:#f1f0f0;padding:10px;margin:5px 0;border-radius:6px;display:flex;align-items:center;gap:10px;}
+  .story-item img{width:40px;height:40px;border-radius:50%;object-fit:cover;}
+  .deleteBtn{background:#ef4444;color:white;border:none;border-radius:4px;padding:3px 6px;cursor:pointer;margin-left:auto;}
 </style>
 </head>
 <body>
 
 <header>💬 Chat Realtime Firebase</header>
+
+<div id="menu">
+  <button id="refreshBtn">🔄 Refresh Chat</button>
+  <button id="storyBtn">📖 Story</button>
+</div>
 
 <div id="chat-container">
   <div id="messages"></div>
@@ -33,12 +49,25 @@
   </div>
 </div>
 
+<!-- Modal Story -->
+<div id="storyModal">
+  <div id="storyContent">
+    <h3>📖 Story Pengguna</h3>
+    <input type="text" id="storyInput" placeholder="Tulis story Anda..." style="width:100%;padding:8px;margin-bottom:10px;">
+    <input type="file" id="profileImage" accept="image/*" style="margin-bottom:10px;">
+    <button id="addStoryBtn">Tambah Story</button>
+    <div id="storyList"></div>
+    <button id="closeStoryBtn" style="margin-top:10px;background:#ef4444;color:white;border:none;border-radius:6px;padding:6px 12px;">Tutup</button>
+  </div>
+</div>
+
 <!-- Firebase Realtime -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, remove, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-  // 🔥 Firebase Config (sudah aktif publik)
+  // Firebase Config (aktif publik)
   const firebaseConfig = {
     apiKey: "AIzaSyD5xCQYLUGnbuS1v5wHn1-k5uovAd8lKe4",
     authDomain: "chat-riletime.firebaseapp.com",
@@ -51,9 +80,14 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+  const storage = getStorage(app);
   const chatRef = ref(db, "messages");
+  const storyRef = ref(db, "stories");
 
+  const messages = document.getElementById("messages");
   const sendBtn = document.getElementById("sendBtn");
+
+  // Kirim Pesan
   sendBtn.addEventListener("click", () => {
     const name = document.getElementById("username").value.trim();
     const msg = document.getElementById("message").value.trim();
@@ -62,7 +96,7 @@
     document.getElementById("message").value = "";
   });
 
-  const messages = document.getElementById("messages");
+  // Tampilkan Pesan Realtime
   onChildAdded(chatRef, (snapshot) => {
     const data = snapshot.val();
     const div = document.createElement("div");
@@ -72,7 +106,81 @@
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
   });
-</script>
 
+  // 🔄 Refresh Chat
+  document.getElementById("refreshBtn").addEventListener("click", async () => {
+    if (confirm("Apakah Anda yakin ingin menghapus semua pesan?")) {
+      await remove(chatRef);
+      messages.innerHTML = "";
+      alert("Semua pesan berhasil dihapus!");
+    }
+  });
+
+  // 📖 Story System
+  const storyModal = document.getElementById("storyModal");
+  const storyBtn = document.getElementById("storyBtn");
+  const closeStoryBtn = document.getElementById("closeStoryBtn");
+  const addStoryBtn = document.getElementById("addStoryBtn");
+  const storyList = document.getElementById("storyList");
+  const storyInput = document.getElementById("storyInput");
+  const profileImage = document.getElementById("profileImage");
+
+  storyBtn.onclick = () => {
+    storyModal.style.display = "flex";
+  };
+  closeStoryBtn.onclick = () => storyModal.style.display = "none";
+
+  // Tambah Story dengan Foto Profil
+  addStoryBtn.onclick = async () => {
+    const name = document.getElementById("username").value.trim();
+    const text = storyInput.value.trim();
+    const file = profileImage.files[0];
+    if (!name || !text) return alert("Isi nama dan story!");
+    let photoURL = "";
+    if (file) {
+      const imgRef = sRef(storage, "story_photos/" + Date.now() + "_" + file.name);
+      await uploadBytes(imgRef, file);
+      photoURL = await getDownloadURL(imgRef);
+    }
+    const newStory = push(storyRef);
+    await set(newStory, { id: newStory.key, name, text, time: new Date().toLocaleString(), photo: photoURL });
+    storyInput.value = "";
+    profileImage.value = "";
+  };
+
+  // Tampilkan Story Realtime
+  onValue(storyRef, (snapshot) => {
+    storyList.innerHTML = "";
+    if (snapshot.exists()) {
+      const stories = snapshot.val();
+      const currentUser = document.getElementById("username").value.trim();
+      Object.values(stories).forEach(s => {
+        const div = document.createElement("div");
+        div.classList.add("story-item");
+        div.innerHTML = `
+          <img src="${s.photo || 'https://via.placeholder.com/40'}">
+          <div>
+            <strong>${s.name}</strong><br>${s.text}<br><small>${s.time}</small>
+          </div>
+        `;
+        // Tombol Hapus hanya muncul untuk story milik sendiri
+        if (s.name === currentUser) {
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Hapus";
+          delBtn.classList.add("deleteBtn");
+          delBtn.onclick = async () => {
+            if (confirm("Hapus story ini?")) {
+              await remove(ref(db, "stories/" + s.id));
+            }
+          };
+          div.appendChild(delBtn);
+        }
+        storyList.appendChild(div);
+      });
+    } else {
+      storyList.innerHTML = "<em>Belum ada story.</em>";
+    }
+  });
+</script>
 </body>
 </html>

@@ -5,186 +5,681 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>💬 Chat Realtime + Story (Ungu Profesional)</title>
 <style>
-  body{
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#7e22ce,#a855f7);
-    margin:0;
-    padding:0;
-    color:#fff;
+  :root {
+    --primary-color: #7e22ce;
+    --primary-light: #a855f7;
+    --primary-dark: #6d28d9;
+    --bg-gradient: linear-gradient(135deg, #7e22ce, #a855f7);
+    --white: #ffffff;
+    --light-bg: #f9fafb;
+    --light-gray: #f1f0f0;
+    --light-purple: #e9d5ff;
+    --danger: #ef4444;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --shadow: 0 2px 8px rgba(0,0,0,0.15);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.25);
   }
-  header{
-    background:#6d28d9;
-    color:white;
-    padding:15px;
-    text-align:center;
-    font-size:1.4em;
-    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-gradient);
+    margin: 0;
+    padding: 0;
+    color: var(--white);
+    height: 100vh;
+    overflow: hidden;
   }
-  #menu{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    margin-top:15px;
+  
+  /* Login Screen */
+  #login-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
   }
-  #menu button{
-    background:#9333ea;
-    color:white;
-    border:none;
-    border-radius:8px;
-    padding:10px 16px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:0.3s;
+  
+  .login-container {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    color: var(--text-dark);
   }
-  #menu button:hover{background:#a855f7;transform:scale(1.05);}
-  #chat-container{
-    width:90%;
-    max-width:600px;
-    margin:20px auto;
-    background:white;
-    border-radius:16px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.25);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    color:black;
+  
+  .login-container h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-top: 0;
   }
-  #messages{
-    flex:1;
-    padding:15px;
-    height:50vh;
-    overflow-y:auto;
+  
+  .login-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
   }
-  .msg{
-    margin:6px 0;
-    padding:10px;
-    border-radius:10px;
-    max-width:75%;
-    word-wrap:break-word;
+  
+  .avatar-selection {
+    margin: 15px 0;
+    text-align: center;
   }
-  .me{background:#e9d5ff;align-self:flex-end;text-align:right;}
-  .other{background:#f1f0f0;align-self:flex-start;}
-  #input-area{
-    display:flex;
-    padding:10px;
-    background:#f9fafb;
-    border-top:1px solid #ddd;
+  
+  .avatar-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
   }
-  #username,#message{
-    border:1px solid #ccc;
-    border-radius:6px;
-    padding:8px;
-    outline:none;
+  
+  .avatar-option {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-purple);
+    font-size: 24px;
   }
-  #username{width:25%;margin-right:5px;}
-  #message{flex:1;}
-  #sendBtn{
-    background:#9333ea;
-    color:white;
-    border:none;
-    border-radius:6px;
-    padding:8px 12px;
-    margin-left:5px;
-    cursor:pointer;
+  
+  .avatar-option.selected {
+    border-color: var(--primary-color);
+    transform: scale(1.1);
   }
-  #sendBtn:hover{background:#7e22ce;}
-
+  
+  .login-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+  }
+  
+  .login-btn:hover {
+    background: var(--primary-dark);
+  }
+  
+  /* Main App */
+  #main-app {
+    display: none;
+    height: 100vh;
+    flex-direction: column;
+  }
+  
+  header {
+    background: var(--primary-dark);
+    color: var(--white);
+    padding: 15px;
+    text-align: center;
+    font-size: 1.4em;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--light-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  
+  .logout-btn {
+    background: transparent;
+    border: 1px solid var(--white);
+    color: var(--white);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .logout-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Contacts Screen */
+  #contacts-screen {
+    flex: 1;
+    background: var(--white);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .contacts-header {
+    background: var(--light-bg);
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    color: var(--text-dark);
+  }
+  
+  .contacts-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .contact-item:hover {
+    background: var(--light-bg);
+  }
+  
+  .contact-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--light-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-right: 15px;
+  }
+  
+  .contact-info {
+    flex: 1;
+  }
+  
+  .contact-name {
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+  }
+  
+  .contact-status {
+    font-size: 0.8em;
+    color: var(--text-light);
+  }
+  
+  /* Chat Screen */
+  #chat-screen {
+    flex: 1;
+    background: var(--white);
+    display: none;
+    flex-direction: column;
+  }
+  
+  .chat-header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: var(--light-bg);
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    margin-right: 10px;
+    cursor: pointer;
+    color: var(--primary-color);
+  }
+  
+  .chat-contact-info {
+    flex: 1;
+  }
+  
+  .chat-contact-name {
+    font-weight: bold;
+    color: var(--text-dark);
+  }
+  
+  .chat-contact-status {
+    font-size: 0.8em;
+    color: var(--text-light);
+  }
+  
+  #chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin: 0 auto;
+    background: var(--white);
+    overflow: hidden;
+  }
+  
+  #messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .msg {
+    margin: 6px 0;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 75%;
+    word-wrap: break-word;
+  }
+  
+  .me {
+    background: var(--light-purple);
+    align-self: flex-end;
+    text-align: right;
+  }
+  
+  .other {
+    background: var(--light-gray);
+    align-self: flex-start;
+  }
+  
+  #input-area {
+    display: flex;
+    padding: 10px;
+    background: var(--light-bg);
+    border-top: 1px solid #ddd;
+  }
+  
+  #message {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    outline: none;
+  }
+  
+  #sendBtn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+  }
+  
+  #sendBtn:hover {
+    background: var(--primary-dark);
+  }
+  
+  /* Bottom Navigation */
+  .bottom-nav {
+    display: flex;
+    background: var(--white);
+    border-top: 1px solid #ddd;
+  }
+  
+  .nav-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: var(--text-light);
+    transition: all 0.3s;
+  }
+  
+  .nav-btn.active {
+    color: var(--primary-color);
+    background: var(--light-bg);
+  }
+  
+  /* Story System */
+  #story-screen {
+    flex: 1;
+    background: var(--white);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    color: var(--text-dark);
+  }
+  
+  .stories-header {
+    padding: 15px;
+    background: var(--light-bg);
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .add-story-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .stories-container {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+  }
+  
+  .story-item {
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .story-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    background: var(--light-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border: 3px solid transparent;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .story-avatar.has-story {
+    border-color: var(--primary-color);
+  }
+  
+  .story-username {
+    font-size: 0.8em;
+    color: var(--text-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
   /* Story Modal */
-  #storyModal{
-    display:none;
-    position:fixed;
-    top:0;left:0;
-    width:100%;height:100%;
-    background:rgba(0,0,0,0.6);
-    justify-content:center;
-    align-items:center;
-    z-index:100;
+  #storyModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
   }
-  #storyContent{
-    background:white;
-    color:black;
-    border-radius:12px;
-    padding:20px;
-    width:90%;
-    max-width:420px;
-    text-align:center;
-    position:relative;
+  
+  #storyContent {
+    background: var(--white);
+    color: var(--text-dark);
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
   }
-  #storyList{
-    margin-top:10px;
-    max-height:300px;
-    overflow-y:auto;
-    text-align:left;
+  
+  .story-view {
+    margin-bottom: 15px;
   }
-  .story-item{
-    position:relative;
-    background:#f8f5ff;
-    padding:12px;
-    margin:10px 0;
-    border-radius:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  
+  .story-view img, .story-view video {
+    max-width: 100%;
+    border-radius: 8px;
   }
-  .story-item img,.story-item video{
-    width:100%;
-    border-radius:10px;
-    margin-top:8px;
+  
+  .story-text {
+    margin: 10px 0;
+    padding: 10px;
+    background: var(--light-bg);
+    border-radius: 8px;
   }
-  .deleteIcon{
-    position:absolute;
-    top:8px;
-    right:8px;
-    background:#ef4444;
-    color:white;
-    border:none;
-    border-radius:50%;
-    width:28px;
-    height:28px;
-    cursor:pointer;
-    font-weight:bold;
-    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  
+  .story-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
   }
-  #notif{
-    display:none;
-    position:fixed;
-    top:20px;
-    right:20px;
-    background:#9333ea;
-    color:white;
-    padding:10px 16px;
-    border-radius:8px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.3);
-    z-index:200;
-    font-weight:bold;
+  
+  .story-nav-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Add Story Modal */
+  #addStoryModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .add-story-content {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+  }
+  
+  .add-story-content h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+  }
+  
+  .add-story-form input, .add-story-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  
+  .add-story-form textarea {
+    height: 80px;
+    resize: vertical;
+  }
+  
+  .form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .cancel-btn {
+    background: var(--light-gray);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 15px;
+    cursor: pointer;
+  }
+  
+  .save-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 15px;
+    cursor: pointer;
+  }
+  
+  /* Notification */
+  #notif {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 2000;
+    font-weight: bold;
   }
 </style>
 </head>
 <body>
 
-<header>💬 Chat Realtime + Story</header>
-
-<div id="menu">
-  <button id="refreshBtn">🔄 Refresh Chat</button>
-  <button id="storyBtn">📖 Story</button>
-</div>
-
-<div id="chat-container">
-  <div id="messages"></div>
-  <div id="input-area">
-    <input type="text" id="username" placeholder="Nama Anda">
-    <input type="text" id="message" placeholder="Ketik pesan...">
-    <button id="sendBtn">Kirim</button>
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-container">
+    <h1>💬 Chat App</h1>
+    <form class="login-form" id="login-form">
+      <input type="text" id="username" placeholder="Nama Anda" required>
+      <input type="password" id="password" placeholder="Password" required>
+      
+      <div class="avatar-selection">
+        <p>Pilih Avatar:</p>
+        <div class="avatar-options" id="avatar-options">
+          <!-- Avatar options will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <button type="submit" class="login-btn">Masuk / Daftar</button>
+    </form>
   </div>
 </div>
 
-<!-- Modal Story -->
+<!-- Main App -->
+<div id="main-app">
+  <header>
+    <div class="user-info">
+      <div class="user-avatar" id="current-user-avatar">👤</div>
+      <span id="current-username">Pengguna</span>
+    </div>
+    <button class="logout-btn" id="logout-btn">Keluar</button>
+  </header>
+
+  <!-- Contacts Screen -->
+  <div id="contacts-screen">
+    <div class="contacts-header">
+      <h2>Kontak</h2>
+    </div>
+    <div class="contacts-list" id="contacts-list">
+      <!-- Contacts will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Chat Screen -->
+  <div id="chat-screen">
+    <div class="chat-header">
+      <button class="back-btn" id="back-to-contacts">←</button>
+      <div class="chat-contact-info">
+        <div class="chat-contact-name" id="chat-with-name">Nama Kontak</div>
+        <div class="chat-contact-status" id="chat-with-status">Online</div>
+      </div>
+    </div>
+    
+    <div id="chat-container">
+      <div id="messages"></div>
+      <div id="input-area">
+        <input type="text" id="message" placeholder="Ketik pesan...">
+        <button id="sendBtn">Kirim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Screen -->
+  <div id="story-screen">
+    <div class="stories-header">
+      <h2>Story</h2>
+      <button class="add-story-btn" id="add-story-btn">+</button>
+    </div>
+    <div class="stories-container" id="stories-container">
+      <!-- Stories will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-contacts">👥</button>
+    <button class="nav-btn" id="nav-chat">💬</button>
+    <button class="nav-btn" id="nav-stories">📖</button>
+  </div>
+</div>
+
+<!-- Story View Modal -->
 <div id="storyModal">
   <div id="storyContent">
-    <h3 style="color:#7e22ce;">📖 Story Pengguna</h3>
-    <input type="text" id="storyInput" placeholder="Tulis story Anda..." style="width:100%;padding:8px;margin-bottom:10px;">
-    <input type="file" id="mediaFile" accept="image/*,video/*" style="margin-bottom:10px;">
-    <button id="addStoryBtn" style="background:#7e22ce;color:white;border:none;padding:8px 14px;border-radius:8px;">Tambah Story</button>
-    <div id="storyList"></div>
-    <button id="closeStoryBtn" style="margin-top:10px;background:#ef4444;color:white;border:none;border-radius:6px;padding:6px 12px;">Tutup</button>
+    <h3 id="story-author">Story Pengguna</h3>
+    <div class="story-view" id="story-view">
+      <!-- Story content will be populated by JavaScript -->
+    </div>
+    <div class="story-controls">
+      <button class="story-nav-btn" id="prev-story">←</button>
+      <button class="story-nav-btn" id="close-story">✕</button>
+      <button class="story-nav-btn" id="next-story">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Story Modal -->
+<div id="addStoryModal">
+  <div class="add-story-content">
+    <h3>Tambah Story Baru</h3>
+    <form class="add-story-form" id="add-story-form">
+      <textarea id="story-text" placeholder="Tulis story Anda..."></textarea>
+      <input type="file" id="story-media" accept="image/*,video/*">
+      <div class="form-buttons">
+        <button type="button" class="cancel-btn" id="cancel-add-story">Batal</button>
+        <button type="submit" class="save-btn">Simpan</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -193,7 +688,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, remove, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, remove, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
   import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
   const firebaseConfig = {
@@ -209,64 +704,333 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const storage = getStorage(app);
+  
+  // Database references
+  const usersRef = ref(db, "users");
   const chatRef = ref(db, "messages");
   const storyRef = ref(db, "stories");
-
+  
+  // DOM Elements
+  const loginScreen = document.getElementById("login-screen");
+  const mainApp = document.getElementById("main-app");
+  const loginForm = document.getElementById("login-form");
+  const usernameInput = document.getElementById("username");
+  const passwordInput = document.getElementById("password");
+  const avatarOptions = document.getElementById("avatar-options");
+  const currentUserAvatar = document.getElementById("current-user-avatar");
+  const currentUsername = document.getElementById("current-username");
+  const logoutBtn = document.getElementById("logout-btn");
+  
+  const contactsScreen = document.getElementById("contacts-screen");
+  const chatScreen = document.getElementById("chat-screen");
+  const storyScreen = document.getElementById("story-screen");
+  const contactsList = document.getElementById("contacts-list");
+  const backToContactsBtn = document.getElementById("back-to-contacts");
+  const chatWithName = document.getElementById("chat-with-name");
+  const chatWithStatus = document.getElementById("chat-with-status");
+  
   const messages = document.getElementById("messages");
+  const messageInput = document.getElementById("message");
   const sendBtn = document.getElementById("sendBtn");
-
-  // Kirim Pesan
-  sendBtn.addEventListener("click", () => {
-    const name = document.getElementById("username").value.trim();
-    const msg = document.getElementById("message").value.trim();
-    if (!name || !msg) return alert("Isi nama dan pesan!");
-    push(chatRef, { name, msg, time: new Date().toLocaleTimeString() });
-    document.getElementById("message").value = "";
+  
+  const navContacts = document.getElementById("nav-contacts");
+  const navChat = document.getElementById("nav-chat");
+  const navStories = document.getElementById("nav-stories");
+  
+  const storiesContainer = document.getElementById("stories-container");
+  const addStoryBtn = document.getElementById("add-story-btn");
+  const addStoryModal = document.getElementById("addStoryModal");
+  const addStoryForm = document.getElementById("add-story-form");
+  const cancelAddStoryBtn = document.getElementById("cancel-add-story");
+  const storyText = document.getElementById("story-text");
+  const storyMedia = document.getElementById("story-media");
+  
+  const storyModal = document.getElementById("storyModal");
+  const storyContent = document.getElementById("storyContent");
+  const storyView = document.getElementById("story-view");
+  const storyAuthor = document.getElementById("story-author");
+  const prevStoryBtn = document.getElementById("prev-story");
+  const nextStoryBtn = document.getElementById("next-story");
+  const closeStoryBtn = document.getElementById("close-story");
+  
+  const notif = document.getElementById("notif");
+  
+  // Global variables
+  let currentUser = null;
+  let selectedAvatar = "👤";
+  let users = [];
+  let stories = [];
+  let currentStoryIndex = 0;
+  let currentChatUser = null;
+  
+  // Avatar options
+  const avatarList = ["👤", "👨", "👩", "🧑", "👦", "👧", "👨‍💼", "👩‍💼", "👨‍🎓", "👩‍🎓"];
+  
+  // Initialize avatar options
+  function initAvatarOptions() {
+    avatarOptions.innerHTML = "";
+    avatarList.forEach(avatar => {
+      const avatarEl = document.createElement("div");
+      avatarEl.className = "avatar-option";
+      avatarEl.textContent = avatar;
+      avatarEl.addEventListener("click", () => {
+        document.querySelectorAll(".avatar-option").forEach(el => el.classList.remove("selected"));
+        avatarEl.classList.add("selected");
+        selectedAvatar = avatar;
+      });
+      avatarOptions.appendChild(avatarEl);
+    });
+    
+    // Select first avatar by default
+    if (avatarOptions.firstChild) {
+      avatarOptions.firstChild.classList.add("selected");
+    }
+  }
+  
+  // Show notification
+  function showNotif(msg) {
+    notif.innerText = msg;
+    notif.style.display = "block";
+    setTimeout(() => notif.style.display = "none", 2000);
+  }
+  
+  // Switch screens
+  function showScreen(screen) {
+    contactsScreen.style.display = "none";
+    chatScreen.style.display = "none";
+    storyScreen.style.display = "none";
+    
+    navContacts.classList.remove("active");
+    navChat.classList.remove("active");
+    navStories.classList.remove("active");
+    
+    switch(screen) {
+      case "contacts":
+        contactsScreen.style.display = "flex";
+        navContacts.classList.add("active");
+        break;
+      case "chat":
+        chatScreen.style.display = "flex";
+        navChat.classList.add("active");
+        break;
+      case "stories":
+        storyScreen.style.display = "flex";
+        navStories.classList.add("active");
+        break;
+    }
+  }
+  
+  // Login/Register
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+    
+    if (!username || !password) {
+      alert("Isi nama dan password!");
+      return;
+    }
+    
+    // Check if user exists
+    const snapshot = await get(usersRef);
+    let userExists = false;
+    
+    if (snapshot.exists()) {
+      const usersData = snapshot.val();
+      for (let id in usersData) {
+        if (usersData[id].username === username) {
+          // User exists, check password
+          if (usersData[id].password === password) {
+            currentUser = { id, ...usersData[id] };
+            userExists = true;
+            break;
+          } else {
+            alert("Password salah!");
+            return;
+          }
+        }
+      }
+    }
+    
+    // If user doesn't exist, create new user
+    if (!userExists) {
+      const newUserRef = push(usersRef);
+      currentUser = {
+        id: newUserRef.key,
+        username,
+        password,
+        avatar: selectedAvatar,
+        createdAt: new Date().toISOString()
+      };
+      await set(newUserRef, currentUser);
+      showNotif("✅ Akun berhasil dibuat!");
+    }
+    
+    // Update UI and switch to main app
+    currentUserAvatar.textContent = currentUser.avatar;
+    currentUsername.textContent = currentUser.username;
+    loginScreen.style.display = "none";
+    mainApp.style.display = "flex";
+    
+    // Load contacts and stories
+    loadContacts();
+    loadStories();
   });
-
-  // Tampilkan Pesan Realtime
-  onChildAdded(chatRef, (snapshot) => {
-    const data = snapshot.val();
-    const div = document.createElement("div");
-    div.classList.add("msg");
-    div.classList.add(data.name === document.getElementById("username").value ? "me" : "other");
-    div.innerHTML = `<strong>${data.name}</strong><br>${data.msg}<br><small>${data.time}</small>`;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+  
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    currentUser = null;
+    mainApp.style.display = "none";
+    loginScreen.style.display = "flex";
+    usernameInput.value = "";
+    passwordInput.value = "";
   });
-
-  // 🔄 Refresh Chat
-  document.getElementById("refreshBtn").addEventListener("click", async () => {
-    if (confirm("Apakah Anda yakin ingin menghapus semua pesan?")) {
-      await remove(chatRef);
-      messages.innerHTML = "";
-      alert("Semua pesan berhasil dihapus!");
+  
+  // Load contacts
+  async function loadContacts() {
+    const snapshot = await get(usersRef);
+    users = [];
+    
+    if (snapshot.exists()) {
+      const usersData = snapshot.val();
+      for (let id in usersData) {
+        if (id !== currentUser.id) {
+          users.push({ id, ...usersData[id] });
+        }
+      }
+    }
+    
+    renderContacts();
+  }
+  
+  // Render contacts
+  function renderContacts() {
+    contactsList.innerHTML = "";
+    
+    if (users.length === 0) {
+      contactsList.innerHTML = "<p style='padding: 15px; text-align: center; color: #666;'>Belum ada pengguna lain</p>";
+      return;
+    }
+    
+    users.forEach(user => {
+      const contactEl = document.createElement("div");
+      contactEl.className = "contact-item";
+      contactEl.addEventListener("click", () => openChat(user));
+      
+      contactEl.innerHTML = `
+        <div class="contact-avatar">${user.avatar}</div>
+        <div class="contact-info">
+          <div class="contact-name">${user.username}</div>
+          <div class="contact-status">Klik untuk mengobrol</div>
+        </div>
+      `;
+      
+      contactsList.appendChild(contactEl);
+    });
+  }
+  
+  // Open chat with a user
+  function openChat(user) {
+    currentChatUser = user;
+    chatWithName.textContent = user.username;
+    chatWithStatus.textContent = "Online";
+    
+    // Clear messages
+    messages.innerHTML = "";
+    
+    // Load chat history
+    loadChatHistory();
+    
+    // Switch to chat screen
+    showScreen("chat");
+  }
+  
+  // Back to contacts
+  backToContactsBtn.addEventListener("click", () => {
+    showScreen("contacts");
+  });
+  
+  // Navigation
+  navContacts.addEventListener("click", () => showScreen("contacts"));
+  navChat.addEventListener("click", () => {
+    if (currentChatUser) {
+      showScreen("chat");
+    } else {
+      alert("Pilih kontak terlebih dahulu!");
     }
   });
-
-  // 📖 Story System
-  const storyModal = document.getElementById("storyModal");
-  const storyBtn = document.getElementById("storyBtn");
-  const closeStoryBtn = document.getElementById("closeStoryBtn");
-  const addStoryBtn = document.getElementById("addStoryBtn");
-  const storyList = document.getElementById("storyList");
-  const storyInput = document.getElementById("storyInput");
-  const mediaFile = document.getElementById("mediaFile");
-  const notif = document.getElementById("notif");
-
-  storyBtn.onclick = () => { storyModal.style.display = "flex"; };
-  closeStoryBtn.onclick = () => storyModal.style.display = "none";
-
-  // Tambah Story (Teks + Foto/Video)
-  addStoryBtn.onclick = async () => {
-    const name = document.getElementById("username").value.trim();
-    const text = storyInput.value.trim();
-    const file = mediaFile.files[0];
-    if (!name) return alert("Masukkan nama Anda terlebih dahulu!");
-    if (!text && !file) return alert("Isi story berupa teks, foto, atau video!");
-
+  navStories.addEventListener("click", () => showScreen("stories"));
+  
+  // Send message
+  sendBtn.addEventListener("click", sendMessage);
+  messageInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
+  
+  function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message || !currentChatUser) return;
+    
+    push(chatRef, {
+      from: currentUser.id,
+      to: currentChatUser.id,
+      message,
+      timestamp: new Date().toISOString()
+    });
+    
+    messageInput.value = "";
+  }
+  
+  // Load chat history
+  function loadChatHistory() {
+    // Clear existing listeners
+    // In a real app, you'd manage listeners more carefully
+    
+    onChildAdded(chatRef, (snapshot) => {
+      const data = snapshot.val();
+      
+      // Only show messages between current user and the selected chat user
+      if ((data.from === currentUser.id && data.to === currentChatUser.id) ||
+          (data.from === currentChatUser.id && data.to === currentUser.id)) {
+        
+        const div = document.createElement("div");
+        div.classList.add("msg");
+        div.classList.add(data.from === currentUser.id ? "me" : "other");
+        
+        const time = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        div.innerHTML = `${data.message}<br><small>${time}</small>`;
+        
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  }
+  
+  // Story System
+  addStoryBtn.addEventListener("click", () => {
+    addStoryModal.style.display = "flex";
+  });
+  
+  cancelAddStoryBtn.addEventListener("click", () => {
+    addStoryModal.style.display = "none";
+    addStoryForm.reset();
+  });
+  
+  addStoryForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const text = storyText.value.trim();
+    const file = storyMedia.files[0];
+    
+    if (!text && !file) {
+      alert("Isi story berupa teks atau media!");
+      return;
+    }
+    
     let fileURL = "";
     let type = "text";
+    
     if (file) {
       const filePath = "stories/" + Date.now() + "_" + file.name;
       const fileRef = sRef(storage, filePath);
@@ -274,61 +1038,145 @@
       fileURL = await getDownloadURL(fileRef);
       type = file.type.startsWith("video") ? "video" : "image";
     }
-
+    
     const newStory = push(storyRef);
     await set(newStory, {
       id: newStory.key,
-      name,
+      userId: currentUser.id,
+      username: currentUser.username,
+      userAvatar: currentUser.avatar,
       text,
       file: fileURL,
       type,
-      time: new Date().toLocaleString()
+      timestamp: new Date().toISOString()
     });
-
-    storyInput.value = "";
-    mediaFile.value = "";
-    showNotif("✅ Story tersimpan!");
-  };
-
-  // Notifikasi popup
-  function showNotif(msg){
-    notif.innerText = msg;
-    notif.style.display = "block";
-    setTimeout(()=> notif.style.display = "none", 2000);
-  }
-
-  // Tampilkan Story Realtime
-  onValue(storyRef, (snapshot) => {
-    storyList.innerHTML = "";
-    const currentUser = document.getElementById("username").value.trim();
-    if (snapshot.exists()) {
-      const stories = snapshot.val();
-      Object.values(stories).reverse().forEach(s => {
-        const div = document.createElement("div");
-        div.classList.add("story-item");
-        div.innerHTML = `<strong>${s.name}</strong><br><small>${s.time}</small><br>${s.text ? s.text : ""}`;
-        if (s.file) {
-          if (s.type === "video") {
-            div.innerHTML += `<video src="${s.file}" controls></video>`;
-          } else {
-            div.innerHTML += `<img src="${s.file}">`;
+    
+    addStoryModal.style.display = "none";
+    addStoryForm.reset();
+    showNotif("✅ Story berhasil ditambahkan!");
+  });
+  
+  // Load stories
+  function loadStories() {
+    onValue(storyRef, (snapshot) => {
+      stories = [];
+      if (snapshot.exists()) {
+        const storiesData = snapshot.val();
+        for (let id in storiesData) {
+          // Only show stories from the last 24 hours
+          const storyTime = new Date(storiesData[id].timestamp);
+          const now = new Date();
+          const diffHours = (now - storyTime) / (1000 * 60 * 60);
+          
+          if (diffHours <= 24) {
+            stories.push({ id, ...storiesData[id] });
           }
         }
-        if (s.name === currentUser) {
-          const del = document.createElement("button");
-          del.textContent = "🗑️";
-          del.className = "deleteIcon";
-          del.onclick = async () => {
-            if (confirm("Hapus story ini?")) await remove(ref(db, "stories/" + s.id));
-          };
-          div.appendChild(del);
-        }
-        storyList.appendChild(div);
-      });
-    } else {
-      storyList.innerHTML = "<em>Belum ada story.</em>";
+        
+        // Sort by timestamp (newest first)
+        stories.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      }
+      
+      renderStories();
+    });
+  }
+  
+  // Render stories
+  function renderStories() {
+    storiesContainer.innerHTML = "";
+    
+    if (stories.length === 0) {
+      storiesContainer.innerHTML = "<p style='text-align: center; color: #666; width: 100%;'>Belum ada story</p>";
+      return;
     }
+    
+    // Group stories by user
+    const userStories = {};
+    stories.forEach(story => {
+      if (!userStories[story.userId]) {
+        userStories[story.userId] = [];
+      }
+      userStories[story.userId].push(story);
+    });
+    
+    // Render each user's stories
+    for (let userId in userStories) {
+      const userStory = userStories[userId][0]; // Use first story for avatar
+      const storyEl = document.createElement("div");
+      storyEl.className = "story-item";
+      storyEl.addEventListener("click", () => openStories(userStories[userId]));
+      
+      storyEl.innerHTML = `
+        <div class="story-avatar has-story">${userStory.userAvatar}</div>
+        <div class="story-username">${userStory.username}</div>
+      `;
+      
+      storiesContainer.appendChild(storyEl);
+    }
+  }
+  
+  // Open stories
+  function openStories(userStories) {
+    currentStoryIndex = 0;
+    displayStory(userStories, currentStoryIndex);
+    storyModal.style.display = "flex";
+  }
+  
+  // Display a specific story
+  function displayStory(userStories, index) {
+    if (index < 0 || index >= userStories.length) return;
+    
+    const story = userStories[index];
+    storyAuthor.textContent = story.username;
+    storyView.innerHTML = "";
+    
+    if (story.text) {
+      const textEl = document.createElement("div");
+      textEl.className = "story-text";
+      textEl.textContent = story.text;
+      storyView.appendChild(textEl);
+    }
+    
+    if (story.file) {
+      if (story.type === "video") {
+        const videoEl = document.createElement("video");
+        videoEl.src = story.file;
+        videoEl.controls = true;
+        videoEl.style.maxWidth = "100%";
+        storyView.appendChild(videoEl);
+      } else {
+        const imgEl = document.createElement("img");
+        imgEl.src = story.file;
+        imgEl.style.maxWidth = "100%";
+        storyView.appendChild(imgEl);
+      }
+    }
+    
+    // Update navigation buttons
+    prevStoryBtn.style.visibility = index > 0 ? "visible" : "hidden";
+    nextStoryBtn.style.visibility = index < userStories.length - 1 ? "visible" : "hidden";
+  }
+  
+  // Story navigation
+  prevStoryBtn.addEventListener("click", () => {
+    // In a real app, you'd track which user's stories are being viewed
+    // For simplicity, we'll just close the modal
+    storyModal.style.display = "none";
   });
+  
+  nextStoryBtn.addEventListener("click", () => {
+    // In a real app, you'd track which user's stories are being viewed
+    // For simplicity, we'll just close the modal
+    storyModal.style.display = "none";
+  });
+  
+  closeStoryBtn.addEventListener("click", () => {
+    storyModal.style.display = "none";
+  });
+  
+  // Initialize the app
+  initAvatarOptions();
+  showScreen("contacts");
 </script>
 </body>
-</html>
+    </html>

@@ -3,37 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💬 Chat Realtime + Story Firebase</title>
+<title>💬 Chat Realtime + Story (Ungu Profesional)</title>
 <style>
-  body{font-family:'Segoe UI',sans-serif;background:#e8f0fe;margin:0;padding:0;}
-  header{background:#2563eb;color:white;padding:15px;text-align:center;font-size:1.3em;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
-  #menu{display:flex;justify-content:center;gap:10px;margin-top:10px;}
-  #menu button{background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;cursor:pointer;}
-  #menu button:hover{background:#1e40af;}
-  #chat-container{width:90%;max-width:600px;margin:20px auto;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.15);overflow:hidden;display:flex;flex-direction:column;}
-  #messages{flex:1;padding:15px;height:50vh;overflow-y:auto;}
-  .msg{margin:6px 0;padding:10px;border-radius:10px;max-width:75%;word-wrap:break-word;}
-  .me{background:#dcf8c6;align-self:flex-end;text-align:right;}
-  .other{background:#f1f0f0;align-self:flex-start;}
-  #input-area{display:flex;padding:10px;background:#f9fafb;border-top:1px solid #ddd;}
-  #username,#message{border:1px solid #ccc;border-radius:6px;padding:8px;outline:none;}
+  body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#7e22ce,#a855f7);
+    margin:0;
+    padding:0;
+    color:#fff;
+  }
+  header{
+    background:#6d28d9;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:1.4em;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  }
+  #menu{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
+  }
+  #menu button{
+    background:#9333ea;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 16px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+  }
+  #menu button:hover{background:#a855f7;transform:scale(1.05);}
+  #chat-container{
+    width:90%;
+    max-width:600px;
+    margin:20px auto;
+    background:white;
+    border-radius:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    color:black;
+  }
+  #messages{
+    flex:1;
+    padding:15px;
+    height:50vh;
+    overflow-y:auto;
+  }
+  .msg{
+    margin:6px 0;
+    padding:10px;
+    border-radius:10px;
+    max-width:75%;
+    word-wrap:break-word;
+  }
+  .me{
+    background:#e9d5ff;
+    align-self:flex-end;
+    text-align:right;
+  }
+  .other{
+    background:#f1f0f0;
+    align-self:flex-start;
+  }
+  #input-area{
+    display:flex;
+    padding:10px;
+    background:#f9fafb;
+    border-top:1px solid #ddd;
+  }
+  #username,#message{
+    border:1px solid #ccc;
+    border-radius:6px;
+    padding:8px;
+    outline:none;
+  }
   #username{width:25%;margin-right:5px;}
   #message{flex:1;}
-  #sendBtn{background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;margin-left:5px;cursor:pointer;}
-  #sendBtn:hover{background:#1d4ed8;}
+  #sendBtn{
+    background:#9333ea;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:8px 12px;
+    margin-left:5px;
+    cursor:pointer;
+  }
+  #sendBtn:hover{background:#7e22ce;}
 
   /* Story Modal */
-  #storyModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:center;z-index:100;}
-  #storyContent{background:white;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;position:relative;}
-  #storyList{margin-top:10px;max-height:300px;overflow-y:auto;text-align:left;}
-  .story-item{background:#f1f0f0;padding:10px;margin:5px 0;border-radius:6px;display:flex;align-items:center;gap:10px;}
-  .story-item img{width:40px;height:40px;border-radius:50%;object-fit:cover;}
-  .deleteBtn{background:#ef4444;color:white;border:none;border-radius:4px;padding:3px 6px;cursor:pointer;margin-left:auto;}
+  #storyModal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+    z-index:100;
+  }
+  #storyContent{
+    background:white;
+    color:black;
+    border-radius:12px;
+    padding:20px;
+    width:90%;
+    max-width:420px;
+    text-align:center;
+    position:relative;
+  }
+  #storyList{
+    margin-top:10px;
+    max-height:300px;
+    overflow-y:auto;
+    text-align:left;
+  }
+  .story-item{
+    background:#f8f5ff;
+    padding:12px;
+    margin:8px 0;
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  }
+  .story-item img,.story-item video{
+    width:100%;
+    border-radius:8px;
+    margin-top:6px;
+  }
+  .deleteBtn{
+    background:#ef4444;
+    color:white;
+    border:none;
+    border-radius:4px;
+    padding:4px 8px;
+    cursor:pointer;
+    margin-top:6px;
+    align-self:flex-end;
+  }
+  #notif{
+    display:none;
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:#9333ea;
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.3);
+    z-index:200;
+    font-weight:bold;
+  }
 </style>
 </head>
 <body>
 
-<header>💬 Chat Realtime Firebase</header>
+<header>💬 Chat Realtime + Story</header>
 
 <div id="menu">
   <button id="refreshBtn">🔄 Refresh Chat</button>
@@ -52,22 +185,23 @@
 <!-- Modal Story -->
 <div id="storyModal">
   <div id="storyContent">
-    <h3>📖 Story Pengguna</h3>
+    <h3 style="color:#7e22ce;">📖 Story Pengguna</h3>
     <input type="text" id="storyInput" placeholder="Tulis story Anda..." style="width:100%;padding:8px;margin-bottom:10px;">
-    <input type="file" id="profileImage" accept="image/*" style="margin-bottom:10px;">
-    <button id="addStoryBtn">Tambah Story</button>
+    <input type="file" id="mediaFile" accept="image/*,video/*" style="margin-bottom:10px;">
+    <button id="addStoryBtn" style="background:#7e22ce;color:white;border:none;padding:8px 14px;border-radius:8px;">Tambah Story</button>
     <div id="storyList"></div>
     <button id="closeStoryBtn" style="margin-top:10px;background:#ef4444;color:white;border:none;border-radius:6px;padding:6px 12px;">Tutup</button>
   </div>
 </div>
 
-<!-- Firebase Realtime -->
+<div id="notif">✅ Story Tersimpan</div>
+
+<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, remove, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, remove, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
   import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-  // Firebase Config (aktif publik)
   const firebaseConfig = {
     apiKey: "AIzaSyD5xCQYLUGnbuS1v5wHn1-k5uovAd8lKe4",
     authDomain: "chat-riletime.firebaseapp.com",
@@ -123,57 +257,84 @@
   const addStoryBtn = document.getElementById("addStoryBtn");
   const storyList = document.getElementById("storyList");
   const storyInput = document.getElementById("storyInput");
-  const profileImage = document.getElementById("profileImage");
+  const mediaFile = document.getElementById("mediaFile");
+  const notif = document.getElementById("notif");
 
-  storyBtn.onclick = () => {
-    storyModal.style.display = "flex";
-  };
+  storyBtn.onclick = () => { storyModal.style.display = "flex"; };
   closeStoryBtn.onclick = () => storyModal.style.display = "none";
 
-  // Tambah Story dengan Foto Profil
+  // Tambah Story (Teks + Foto/Video)
   addStoryBtn.onclick = async () => {
     const name = document.getElementById("username").value.trim();
     const text = storyInput.value.trim();
-    const file = profileImage.files[0];
-    if (!name || !text) return alert("Isi nama dan story!");
-    let photoURL = "";
+    const file = mediaFile.files[0];
+    if (!name) return alert("Masukkan nama Anda terlebih dahulu!");
+    if (!text && !file) return alert("Isi story berupa teks, foto, atau video!");
+
+    let fileURL = "";
+    let type = "text";
     if (file) {
-      const imgRef = sRef(storage, "story_photos/" + Date.now() + "_" + file.name);
-      await uploadBytes(imgRef, file);
-      photoURL = await getDownloadURL(imgRef);
+      const filePath = "stories/" + Date.now() + "_" + file.name;
+      const fileRef = sRef(storage, filePath);
+      await uploadBytes(fileRef, file);
+      fileURL = await getDownloadURL(fileRef);
+      type = file.type.startsWith("video") ? "video" : "image";
     }
+
     const newStory = push(storyRef);
-    await set(newStory, { id: newStory.key, name, text, time: new Date().toLocaleString(), photo: photoURL });
+    await set(newStory, {
+      id: newStory.key,
+      name,
+      text,
+      file: fileURL,
+      type,
+      time: new Date().toLocaleString()
+    });
+
+    // Reset form dan tampilkan notifikasi
     storyInput.value = "";
-    profileImage.value = "";
+    mediaFile.value = "";
+    showNotif("✅ Story tersimpan!");
   };
+
+  // Notifikasi popup
+  function showNotif(msg){
+    notif.innerText = msg;
+    notif.style.display = "block";
+    setTimeout(()=> notif.style.display = "none", 2000);
+  }
 
   // Tampilkan Story Realtime
   onValue(storyRef, (snapshot) => {
     storyList.innerHTML = "";
+    const currentUser = document.getElementById("username").value.trim();
     if (snapshot.exists()) {
       const stories = snapshot.val();
-      const currentUser = document.getElementById("username").value.trim();
-      Object.values(stories).forEach(s => {
+      Object.values(stories).reverse().forEach(s => {
         const div = document.createElement("div");
         div.classList.add("story-item");
-        div.innerHTML = `
-          <img src="${s.photo || 'https://via.placeholder.com/40'}">
-          <div>
-            <strong>${s.name}</strong><br>${s.text}<br><small>${s.time}</small>
-          </div>
-        `;
-        // Tombol Hapus hanya muncul untuk story milik sendiri
+        div.innerHTML = `<strong>${s.name}</strong><br><small>${s.time}</small><br>${s.text ? s.text : ""}`;
+        if (s.file) {
+          if (s.type === "video") {
+            const vid = document.createElement("video");
+            vid.src = s.file;
+            vid.controls = true;
+            div.appendChild(vid);
+          } else {
+            const img = document.createElement("img");
+            img.src = s.file;
+            div.appendChild(img);
+          }
+        }
+        // Tombol hapus hanya untuk story sendiri
         if (s.name === currentUser) {
-          const delBtn = document.createElement("button");
-          delBtn.textContent = "Hapus";
-          delBtn.classList.add("deleteBtn");
-          delBtn.onclick = async () => {
-            if (confirm("Hapus story ini?")) {
-              await remove(ref(db, "stories/" + s.id));
-            }
+          const del = document.createElement("button");
+          del.textContent = "Hapus";
+          del.className = "deleteBtn";
+          del.onclick = async () => {
+            if (confirm("Hapus story ini?")) await remove(ref(db, "stories/" + s.id));
           };
-          div.appendChild(delBtn);
+          div.appendChild(del);
         }
         storyList.appendChild(div);
       });

@@ -3,27 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💬 Chat Realtime + Story (Ungu Profesional)</title>
+<title>💬 Chat Realtime (WhatsApp Style)</title>
 <style>
   :root {
-    --primary-color: #7e22ce;
-    --primary-light: #a855f7;
-    --primary-dark: #6d28d9;
-    --bg-gradient: linear-gradient(135deg, #7e22ce, #a855f7);
+    --primary-color: #075e54;
+    --primary-light: #128c7e;
+    --primary-dark: #054d44;
+    --accent-color: #25d366;
     --white: #ffffff;
-    --light-bg: #f9fafb;
-    --light-gray: #f1f0f0;
-    --light-purple: #e9d5ff;
-    --danger: #ef4444;
+    --light-bg: #f0f0f0;
+    --light-gray: #e6e6e6;
+    --light-green: #dcf8c6;
+    --light-blue: #d1f4ff;
+    --danger: #ff3b30;
     --text-dark: #333333;
     --text-light: #666666;
     --shadow: 0 2px 8px rgba(0,0,0,0.15);
     --shadow-lg: 0 4px 12px rgba(0,0,0,0.25);
   }
   
+  * {
+    box-sizing: border-box;
+  }
+  
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--bg-gradient);
+    background: var(--primary-color);
     margin: 0;
     padding: 0;
     color: var(--white);
@@ -40,6 +45,7 @@
     height: 100vh;
     padding: 20px;
     box-sizing: border-box;
+    background: var(--primary-color);
   }
   
   .login-container {
@@ -50,12 +56,18 @@
     width: 100%;
     max-width: 400px;
     color: var(--text-dark);
+    text-align: center;
   }
   
-  .login-container h1 {
-    text-align: center;
+  .app-logo {
+    font-size: 3rem;
+    margin-bottom: 10px;
+  }
+  
+  .app-title {
     color: var(--primary-color);
     margin-top: 0;
+    margin-bottom: 20px;
   }
   
   .login-form input {
@@ -66,6 +78,22 @@
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 16px;
+  }
+  
+  .password-container {
+    position: relative;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-light);
   }
   
   .avatar-selection {
@@ -92,7 +120,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--light-purple);
+    background-color: var(--light-blue);
     font-size: 24px;
   }
   
@@ -127,7 +155,7 @@
   }
   
   header {
-    background: var(--primary-dark);
+    background: var(--primary-color);
     color: var(--white);
     padding: 15px;
     text-align: center;
@@ -148,7 +176,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--light-purple);
+    background-color: var(--light-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -183,6 +211,19 @@
     padding: 15px;
     border-bottom: 1px solid #ddd;
     color: var(--text-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .refresh-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
   }
   
   .contacts-list {
@@ -207,7 +248,7 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: var(--light-purple);
+    background-color: var(--light-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -242,8 +283,8 @@
     display: flex;
     align-items: center;
     padding: 15px;
-    background: var(--light-bg);
-    border-bottom: 1px solid #ddd;
+    background: var(--primary-color);
+    color: var(--white);
   }
   
   .back-btn {
@@ -252,7 +293,7 @@
     font-size: 1.2em;
     margin-right: 10px;
     cursor: pointer;
-    color: var(--primary-color);
+    color: var(--white);
   }
   
   .chat-contact-info {
@@ -261,12 +302,25 @@
   
   .chat-contact-name {
     font-weight: bold;
-    color: var(--text-dark);
+    color: var(--white);
   }
   
   .chat-contact-status {
     font-size: 0.8em;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .chat-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-action-btn {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 1.2em;
+    cursor: pointer;
   }
   
   #chat-container {
@@ -277,6 +331,7 @@
     margin: 0 auto;
     background: var(--white);
     overflow: hidden;
+    position: relative;
   }
   
   #messages {
@@ -285,50 +340,88 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    background: #e5ddd5;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
   
   .msg {
     margin: 6px 0;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
     max-width: 75%;
     word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    color: var(--text-dark);
   }
   
   .me {
-    background: var(--light-purple);
+    background: var(--light-green);
     align-self: flex-end;
-    text-align: right;
+    text-align: left;
+    border-top-right-radius: 0;
   }
   
   .other {
-    background: var(--light-gray);
+    background: var(--white);
     align-self: flex-start;
+    border-top-left-radius: 0;
+  }
+  
+  .msg-sender {
+    font-weight: bold;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+  }
+  
+  .msg-content {
+    margin: 4px 0;
+    line-height: 1.4;
+    color: var(--text-dark);
+  }
+  
+  .msg-time {
+    font-size: 0.7em;
+    color: var(--text-light);
+    text-align: right;
+    margin-top: 4px;
+  }
+  
+  .other .msg-time {
+    text-align: left;
   }
   
   #input-area {
     display: flex;
     padding: 10px;
-    background: var(--light-bg);
+    background: var(--light-gray);
     border-top: 1px solid #ddd;
+    align-items: center;
   }
   
   #message {
     flex: 1;
     border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 8px;
+    border-radius: 20px;
+    padding: 10px 15px;
     outline: none;
+    font-size: 16px;
   }
   
   #sendBtn {
     background: var(--primary-color);
     color: var(--white);
     border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin-left: 5px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
   }
   
   #sendBtn:hover {
@@ -358,205 +451,6 @@
     background: var(--light-bg);
   }
   
-  /* Story System */
-  #story-screen {
-    flex: 1;
-    background: var(--white);
-    display: none;
-    flex-direction: column;
-    overflow-y: auto;
-    color: var(--text-dark);
-  }
-  
-  .stories-header {
-    padding: 15px;
-    background: var(--light-bg);
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .add-story-btn {
-    background: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .stories-container {
-    padding: 15px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 15px;
-  }
-  
-  .story-item {
-    text-align: center;
-    cursor: pointer;
-  }
-  
-  .story-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin: 0 auto 8px;
-    background: var(--light-purple);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    border: 3px solid transparent;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .story-avatar.has-story {
-    border-color: var(--primary-color);
-  }
-  
-  .story-username {
-    font-size: 0.8em;
-    color: var(--text-dark);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  /* Story Modal */
-  #storyModal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  #storyContent {
-    background: var(--white);
-    color: var(--text-dark);
-    border-radius: 12px;
-    padding: 20px;
-    width: 90%;
-    max-width: 420px;
-    text-align: center;
-    position: relative;
-  }
-  
-  .story-view {
-    margin-bottom: 15px;
-  }
-  
-  .story-view img, .story-view video {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-  
-  .story-text {
-    margin: 10px 0;
-    padding: 10px;
-    background: var(--light-bg);
-    border-radius: 8px;
-  }
-  
-  .story-controls {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
-  }
-  
-  .story-nav-btn {
-    background: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Add Story Modal */
-  #addStoryModal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .add-story-content {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 20px;
-    width: 90%;
-    max-width: 400px;
-  }
-  
-  .add-story-content h3 {
-    margin-top: 0;
-    color: var(--primary-color);
-  }
-  
-  .add-story-form input, .add-story-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box;
-  }
-  
-  .add-story-form textarea {
-    height: 80px;
-    resize: vertical;
-  }
-  
-  .form-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-  }
-  
-  .cancel-btn {
-    background: var(--light-gray);
-    color: var(--text-dark);
-    border: none;
-    border-radius: 6px;
-    padding: 8px 15px;
-    cursor: pointer;
-  }
-  
-  .save-btn {
-    background: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 6px;
-    padding: 8px 15px;
-    cursor: pointer;
-  }
-  
   /* Notification */
   #notif {
     display: none;
@@ -571,6 +465,20 @@
     z-index: 2000;
     font-weight: bold;
   }
+  
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+  }
+  
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-light);
+  }
 </style>
 </head>
 <body>
@@ -578,10 +486,15 @@
 <!-- Login Screen -->
 <div id="login-screen">
   <div class="login-container">
-    <h1>💬 Chat App</h1>
+    <div class="app-logo">💬</div>
+    <h1 class="app-title">WhatsApp Style Chat</h1>
     <form class="login-form" id="login-form">
       <input type="text" id="username" placeholder="Nama Anda" required>
-      <input type="password" id="password" placeholder="Password" required>
+      
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="button" class="toggle-password" id="toggle-password">👁️</button>
+      </div>
       
       <div class="avatar-selection">
         <p>Pilih Avatar:</p>
@@ -609,9 +522,10 @@
   <div id="contacts-screen">
     <div class="contacts-header">
       <h2>Kontak</h2>
+      <button class="refresh-btn" id="refresh-contacts">🔄 Refresh</button>
     </div>
     <div class="contacts-list" id="contacts-list">
-      <!-- Contacts will be populated by JavaScript -->
+      <div class="loading">Memuat kontak...</div>
     </div>
   </div>
 
@@ -623,92 +537,71 @@
         <div class="chat-contact-name" id="chat-with-name">Nama Kontak</div>
         <div class="chat-contact-status" id="chat-with-status">Online</div>
       </div>
+      <div class="chat-actions">
+        <button class="chat-action-btn" id="refresh-chat" title="Refresh Pesan">🔄</button>
+        <button class="chat-action-btn" id="clear-chat" title="Hapus Percakapan">🗑️</button>
+      </div>
     </div>
     
     <div id="chat-container">
-      <div id="messages"></div>
+      <div id="messages">
+        <div class="empty-state" id="empty-messages">
+          <p>Belum ada pesan</p>
+          <p>Mulai percakapan dengan mengirim pesan</p>
+        </div>
+      </div>
       <div id="input-area">
         <input type="text" id="message" placeholder="Ketik pesan...">
-        <button id="sendBtn">Kirim</button>
+        <button id="sendBtn">➤</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Story Screen -->
-  <div id="story-screen">
-    <div class="stories-header">
-      <h2>Story</h2>
-      <button class="add-story-btn" id="add-story-btn">+</button>
-    </div>
-    <div class="stories-container" id="stories-container">
-      <!-- Stories will be populated by JavaScript -->
     </div>
   </div>
 
   <!-- Bottom Navigation -->
   <div class="bottom-nav">
-    <button class="nav-btn active" id="nav-contacts">👥</button>
-    <button class="nav-btn" id="nav-chat">💬</button>
-    <button class="nav-btn" id="nav-stories">📖</button>
+    <button class="nav-btn active" id="nav-contacts">👥 Kontak</button>
+    <button class="nav-btn" id="nav-chat">💬 Chat</button>
   </div>
 </div>
 
-<!-- Story View Modal -->
-<div id="storyModal">
-  <div id="storyContent">
-    <h3 id="story-author">Story Pengguna</h3>
-    <div class="story-view" id="story-view">
-      <!-- Story content will be populated by JavaScript -->
-    </div>
-    <div class="story-controls">
-      <button class="story-nav-btn" id="prev-story">←</button>
-      <button class="story-nav-btn" id="close-story">✕</button>
-      <button class="story-nav-btn" id="next-story">→</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Story Modal -->
-<div id="addStoryModal">
-  <div class="add-story-content">
-    <h3>Tambah Story Baru</h3>
-    <form class="add-story-form" id="add-story-form">
-      <textarea id="story-text" placeholder="Tulis story Anda..."></textarea>
-      <input type="file" id="story-media" accept="image/*,video/*">
-      <div class="form-buttons">
-        <button type="button" class="cancel-btn" id="cancel-add-story">Batal</button>
-        <button type="submit" class="save-btn">Simpan</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div id="notif">✅ Story Tersimpan</div>
+<div id="notif">✅ Pesan terkirim</div>
 
 <!-- Firebase -->
 <script type="module">
+  // Import Firebase modules
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, remove, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+  import { 
+    getDatabase, 
+    ref, 
+    push, 
+    onChildAdded, 
+    remove, 
+    onValue, 
+    set, 
+    get, 
+    query, 
+    orderByChild,
+    off 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
+  // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyD5xCQYLUGnbuS1v5wHn1-k5uovAd8lKe4",
     authDomain: "chat-riletime.firebaseapp.com",
-    databaseURL: "https://chat-riletime-default-rtdb.firebaseio.com/",
+    databaseURL: "https://chat-riletime-default-rtdb.firebaseio.com",
     projectId: "chat-riletime",
     storageBucket: "chat-riletime.firebasestorage.app",
     messagingSenderId: "467675334077",
     appId: "1:467675334077:web:7f0a33e0a96b2b84758e12"
   };
 
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const storage = getStorage(app);
   
   // Database references
   const usersRef = ref(db, "users");
-  const chatRef = ref(db, "messages");
-  const storyRef = ref(db, "stories");
+  const messagesRef = ref(db, "messages");
   
   // DOM Elements
   const loginScreen = document.getElementById("login-screen");
@@ -716,6 +609,7 @@
   const loginForm = document.getElementById("login-form");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
+  const togglePasswordBtn = document.getElementById("toggle-password");
   const avatarOptions = document.getElementById("avatar-options");
   const currentUserAvatar = document.getElementById("current-user-avatar");
   const currentUsername = document.getElementById("current-username");
@@ -723,35 +617,21 @@
   
   const contactsScreen = document.getElementById("contacts-screen");
   const chatScreen = document.getElementById("chat-screen");
-  const storyScreen = document.getElementById("story-screen");
   const contactsList = document.getElementById("contacts-list");
+  const refreshContactsBtn = document.getElementById("refresh-contacts");
   const backToContactsBtn = document.getElementById("back-to-contacts");
   const chatWithName = document.getElementById("chat-with-name");
   const chatWithStatus = document.getElementById("chat-with-status");
+  const refreshChatBtn = document.getElementById("refresh-chat");
+  const clearChatBtn = document.getElementById("clear-chat");
   
   const messages = document.getElementById("messages");
+  const emptyMessages = document.getElementById("empty-messages");
   const messageInput = document.getElementById("message");
   const sendBtn = document.getElementById("sendBtn");
   
   const navContacts = document.getElementById("nav-contacts");
   const navChat = document.getElementById("nav-chat");
-  const navStories = document.getElementById("nav-stories");
-  
-  const storiesContainer = document.getElementById("stories-container");
-  const addStoryBtn = document.getElementById("add-story-btn");
-  const addStoryModal = document.getElementById("addStoryModal");
-  const addStoryForm = document.getElementById("add-story-form");
-  const cancelAddStoryBtn = document.getElementById("cancel-add-story");
-  const storyText = document.getElementById("story-text");
-  const storyMedia = document.getElementById("story-media");
-  
-  const storyModal = document.getElementById("storyModal");
-  const storyContent = document.getElementById("storyContent");
-  const storyView = document.getElementById("story-view");
-  const storyAuthor = document.getElementById("story-author");
-  const prevStoryBtn = document.getElementById("prev-story");
-  const nextStoryBtn = document.getElementById("next-story");
-  const closeStoryBtn = document.getElementById("close-story");
   
   const notif = document.getElementById("notif");
   
@@ -759,9 +639,8 @@
   let currentUser = null;
   let selectedAvatar = "👤";
   let users = [];
-  let stories = [];
-  let currentStoryIndex = 0;
   let currentChatUser = null;
+  let messageListener = null;
   
   // Avatar options
   const avatarList = ["👤", "👨", "👩", "🧑", "👦", "👧", "👨‍💼", "👩‍💼", "👨‍🎓", "👩‍🎓"];
@@ -787,6 +666,17 @@
     }
   }
   
+  // Toggle password visibility
+  togglePasswordBtn.addEventListener("click", () => {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      togglePasswordBtn.textContent = "🙈";
+    } else {
+      passwordInput.type = "password";
+      togglePasswordBtn.textContent = "👁️";
+    }
+  });
+  
   // Show notification
   function showNotif(msg) {
     notif.innerText = msg;
@@ -798,11 +688,9 @@
   function showScreen(screen) {
     contactsScreen.style.display = "none";
     chatScreen.style.display = "none";
-    storyScreen.style.display = "none";
     
     navContacts.classList.remove("active");
     navChat.classList.remove("active");
-    navStories.classList.remove("active");
     
     switch(screen) {
       case "contacts":
@@ -812,10 +700,6 @@
       case "chat":
         chatScreen.style.display = "flex";
         navChat.classList.add("active");
-        break;
-      case "stories":
-        storyScreen.style.display = "flex";
-        navStories.classList.add("active");
         break;
     }
   }
@@ -832,50 +716,54 @@
       return;
     }
     
-    // Check if user exists
-    const snapshot = await get(usersRef);
-    let userExists = false;
-    
-    if (snapshot.exists()) {
-      const usersData = snapshot.val();
-      for (let id in usersData) {
-        if (usersData[id].username === username) {
-          // User exists, check password
-          if (usersData[id].password === password) {
-            currentUser = { id, ...usersData[id] };
-            userExists = true;
-            break;
-          } else {
-            alert("Password salah!");
-            return;
+    try {
+      // Check if user exists
+      const snapshot = await get(usersRef);
+      let userExists = false;
+      
+      if (snapshot.exists()) {
+        const usersData = snapshot.val();
+        for (let id in usersData) {
+          if (usersData[id].username === username) {
+            // User exists, check password
+            if (usersData[id].password === password) {
+              currentUser = { id, ...usersData[id] };
+              userExists = true;
+              break;
+            } else {
+              alert("Password salah!");
+              return;
+            }
           }
         }
       }
+      
+      // If user doesn't exist, create new user
+      if (!userExists) {
+        const newUserRef = push(usersRef);
+        currentUser = {
+          id: newUserRef.key,
+          username,
+          password,
+          avatar: selectedAvatar,
+          createdAt: new Date().toISOString()
+        };
+        await set(newUserRef, currentUser);
+        showNotif("✅ Akun berhasil dibuat!");
+      }
+      
+      // Update UI and switch to main app
+      currentUserAvatar.textContent = currentUser.avatar;
+      currentUsername.textContent = currentUser.username;
+      loginScreen.style.display = "none";
+      mainApp.style.display = "flex";
+      
+      // Load contacts
+      loadContacts();
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Terjadi kesalahan saat login. Coba lagi.");
     }
-    
-    // If user doesn't exist, create new user
-    if (!userExists) {
-      const newUserRef = push(usersRef);
-      currentUser = {
-        id: newUserRef.key,
-        username,
-        password,
-        avatar: selectedAvatar,
-        createdAt: new Date().toISOString()
-      };
-      await set(newUserRef, currentUser);
-      showNotif("✅ Akun berhasil dibuat!");
-    }
-    
-    // Update UI and switch to main app
-    currentUserAvatar.textContent = currentUser.avatar;
-    currentUsername.textContent = currentUser.username;
-    loginScreen.style.display = "none";
-    mainApp.style.display = "flex";
-    
-    // Load contacts and stories
-    loadContacts();
-    loadStories();
   });
   
   // Logout
@@ -885,23 +773,38 @@
     loginScreen.style.display = "flex";
     usernameInput.value = "";
     passwordInput.value = "";
+    passwordInput.type = "password";
+    togglePasswordBtn.textContent = "👁️";
+    
+    // Remove message listener
+    if (messageListener) {
+      off(messagesRef, 'child_added', messageListener);
+      messageListener = null;
+    }
   });
   
   // Load contacts
   async function loadContacts() {
-    const snapshot = await get(usersRef);
-    users = [];
-    
-    if (snapshot.exists()) {
-      const usersData = snapshot.val();
-      for (let id in usersData) {
-        if (id !== currentUser.id) {
-          users.push({ id, ...usersData[id] });
+    try {
+      contactsList.innerHTML = '<div class="loading">Memuat kontak...</div>';
+      
+      const snapshot = await get(usersRef);
+      users = [];
+      
+      if (snapshot.exists()) {
+        const usersData = snapshot.val();
+        for (let id in usersData) {
+          if (id !== currentUser.id) {
+            users.push({ id, ...usersData[id] });
+          }
         }
       }
+      
+      renderContacts();
+    } catch (error) {
+      console.error("Error loading contacts:", error);
+      contactsList.innerHTML = '<div class="empty-state">Gagal memuat kontak</div>';
     }
-    
-    renderContacts();
   }
   
   // Render contacts
@@ -909,7 +812,7 @@
     contactsList.innerHTML = "";
     
     if (users.length === 0) {
-      contactsList.innerHTML = "<p style='padding: 15px; text-align: center; color: #666;'>Belum ada pengguna lain</p>";
+      contactsList.innerHTML = "<div class='empty-state'><p>Belum ada pengguna lain</p><p>Bagikan aplikasi ini dengan teman Anda!</p></div>";
       return;
     }
     
@@ -930,6 +833,9 @@
     });
   }
   
+  // Refresh contacts
+  refreshContactsBtn.addEventListener("click", loadContacts);
+  
   // Open chat with a user
   function openChat(user) {
     currentChatUser = user;
@@ -937,18 +843,70 @@
     chatWithStatus.textContent = "Online";
     
     // Clear messages
-    messages.innerHTML = "";
+    messages.innerHTML = '<div class="empty-state" id="empty-messages"><p>Memuat pesan...</p></div>';
     
     // Load chat history
     loadChatHistory();
     
     // Switch to chat screen
     showScreen("chat");
+    
+    // Focus on message input
+    setTimeout(() => {
+      messageInput.focus();
+    }, 100);
   }
   
   // Back to contacts
   backToContactsBtn.addEventListener("click", () => {
     showScreen("contacts");
+    
+    // Remove message listener when leaving chat
+    if (messageListener) {
+      off(messagesRef, 'child_added', messageListener);
+      messageListener = null;
+    }
+  });
+  
+  // Refresh chat
+  refreshChatBtn.addEventListener("click", () => {
+    if (currentChatUser) {
+      // Clear current messages
+      messages.innerHTML = '<div class="empty-state" id="empty-messages"><p>Memuat pesan...</p></div>';
+      
+      // Reload chat history
+      loadChatHistory();
+      showNotif("✅ Percakapan diperbarui");
+    }
+  });
+  
+  // Clear chat
+  clearChatBtn.addEventListener("click", async () => {
+    if (currentChatUser && confirm("Apakah Anda yakin ingin menghapus semua pesan dalam percakapan ini?")) {
+      try {
+        // Get all messages
+        const snapshot = await get(messagesRef);
+        if (snapshot.exists()) {
+          const messagesData = snapshot.val();
+          
+          // Delete messages between current user and chat user
+          for (let id in messagesData) {
+            const message = messagesData[id];
+            if ((message.from === currentUser.id && message.to === currentChatUser.id) ||
+                (message.from === currentChatUser.id && message.to === currentUser.id)) {
+              await remove(ref(db, `messages/${id}`));
+            }
+          }
+          
+          // Clear local messages
+          messages.innerHTML = '<div class="empty-state" id="empty-messages"><p>Belum ada pesan</p><p>Mulai percakapan dengan mengirim pesan</p></div>';
+          showNotif("✅ Percakapan dihapus");
+        }
+      } catch (error) {
+        console.error("Error clearing chat:", error);
+        showNotif("❌ Gagal menghapus percakapan");
+      }
+    }
   });
   
   // Navigation
@@ -960,7 +918,6 @@
       alert("Pilih kontak terlebih dahulu!");
     }
   });
-  navStories.addEventListener("click", () => showScreen("stories"));
   
   // Send message
   sendBtn.addEventListener("click", sendMessage);
@@ -968,215 +925,103 @@
     if (e.key === "Enter") sendMessage();
   });
   
-  function sendMessage() {
-    const message = messageInput.value.trim();
-    if (!message || !currentChatUser) return;
+  async function sendMessage() {
+    const messageText = messageInput.value.trim();
+    if (!messageText || !currentChatUser) return;
     
-    push(chatRef, {
-      from: currentUser.id,
-      to: currentChatUser.id,
-      message,
-      timestamp: new Date().toISOString()
-    });
-    
-    messageInput.value = "";
+    try {
+      // Create message object
+      const message = {
+        from: currentUser.id,
+        fromName: currentUser.username,
+        to: currentChatUser.id,
+        message: messageText,
+        timestamp: new Date().toISOString(),
+        timestampDisplay: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      };
+      
+      // Push to Firebase
+      await push(messagesRef, message);
+      
+      // Clear input
+      messageInput.value = "";
+      showNotif("✅ Pesan terkirim");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      showNotif("❌ Gagal mengirim pesan");
+    }
   }
   
   // Load chat history
   function loadChatHistory() {
-    // Clear existing listeners
-    // In a real app, you'd manage listeners more carefully
+    // Remove any existing listener
+    if (messageListener) {
+      off(messagesRef, 'child_added', messageListener);
+    }
     
-    onChildAdded(chatRef, (snapshot) => {
+    // Set up real-time listener for new messages
+    messageListener = onChildAdded(messagesRef, (snapshot) => {
       const data = snapshot.val();
       
       // Only show messages between current user and the selected chat user
       if ((data.from === currentUser.id && data.to === currentChatUser.id) ||
           (data.from === currentChatUser.id && data.to === currentUser.id)) {
         
+        // Remove loading/empty state if it exists
+        const emptyMsg = document.getElementById("empty-messages");
+        if (emptyMsg) {
+          emptyMsg.style.display = "none";
+        }
+        
+        // Create message element
         const div = document.createElement("div");
         div.classList.add("msg");
         div.classList.add(data.from === currentUser.id ? "me" : "other");
         
-        const time = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        div.innerHTML = `${data.message}<br><small>${time}</small>`;
+        const time = data.timestampDisplay || new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        div.innerHTML = `
+          ${data.from !== currentUser.id ? `<div class="msg-sender">${data.fromName}</div>` : ''}
+          <div class="msg-content">${data.message}</div>
+          <div class="msg-time">${time}</div>
+        `;
         
         messages.appendChild(div);
-        messages.scrollTop = messages.scrollHeight;
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          messages.scrollTop = messages.scrollHeight;
+        }, 100);
       }
     });
-  }
-  
-  // Story System
-  addStoryBtn.addEventListener("click", () => {
-    addStoryModal.style.display = "flex";
-  });
-  
-  cancelAddStoryBtn.addEventListener("click", () => {
-    addStoryModal.style.display = "none";
-    addStoryForm.reset();
-  });
-  
-  addStoryForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
     
-    const text = storyText.value.trim();
-    const file = storyMedia.files[0];
-    
-    if (!text && !file) {
-      alert("Isi story berupa teks atau media!");
-      return;
-    }
-    
-    let fileURL = "";
-    let type = "text";
-    
-    if (file) {
-      const filePath = "stories/" + Date.now() + "_" + file.name;
-      const fileRef = sRef(storage, filePath);
-      await uploadBytes(fileRef, file);
-      fileURL = await getDownloadURL(fileRef);
-      type = file.type.startsWith("video") ? "video" : "image";
-    }
-    
-    const newStory = push(storyRef);
-    await set(newStory, {
-      id: newStory.key,
-      userId: currentUser.id,
-      username: currentUser.username,
-      userAvatar: currentUser.avatar,
-      text,
-      file: fileURL,
-      type,
-      timestamp: new Date().toISOString()
-    });
-    
-    addStoryModal.style.display = "none";
-    addStoryForm.reset();
-    showNotif("✅ Story berhasil ditambahkan!");
-  });
-  
-  // Load stories
-  function loadStories() {
-    onValue(storyRef, (snapshot) => {
-      stories = [];
+    // Also load existing messages
+    onValue(messagesRef, (snapshot) => {
       if (snapshot.exists()) {
-        const storiesData = snapshot.val();
-        for (let id in storiesData) {
-          // Only show stories from the last 24 hours
-          const storyTime = new Date(storiesData[id].timestamp);
-          const now = new Date();
-          const diffHours = (now - storyTime) / (1000 * 60 * 60);
-          
-          if (diffHours <= 24) {
-            stories.push({ id, ...storiesData[id] });
+        const messagesData = snapshot.val();
+        let hasMessages = false;
+        
+        // Check if there are any messages for this conversation
+        for (let id in messagesData) {
+          const data = messagesData[id];
+          if ((data.from === currentUser.id && data.to === currentChatUser.id) ||
+              (data.from === currentChatUser.id && data.to === currentUser.id)) {
+            hasMessages = true;
+            break;
           }
         }
         
-        // Sort by timestamp (newest first)
-        stories.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        // Show empty state if no messages
+        if (!hasMessages) {
+          messages.innerHTML = '<div class="empty-state" id="empty-messages"><p>Belum ada pesan</p><p>Mulai percakapan dengan mengirim pesan</p></div>';
+        }
       }
-      
-      renderStories();
     });
   }
-  
-  // Render stories
-  function renderStories() {
-    storiesContainer.innerHTML = "";
-    
-    if (stories.length === 0) {
-      storiesContainer.innerHTML = "<p style='text-align: center; color: #666; width: 100%;'>Belum ada story</p>";
-      return;
-    }
-    
-    // Group stories by user
-    const userStories = {};
-    stories.forEach(story => {
-      if (!userStories[story.userId]) {
-        userStories[story.userId] = [];
-      }
-      userStories[story.userId].push(story);
-    });
-    
-    // Render each user's stories
-    for (let userId in userStories) {
-      const userStory = userStories[userId][0]; // Use first story for avatar
-      const storyEl = document.createElement("div");
-      storyEl.className = "story-item";
-      storyEl.addEventListener("click", () => openStories(userStories[userId]));
-      
-      storyEl.innerHTML = `
-        <div class="story-avatar has-story">${userStory.userAvatar}</div>
-        <div class="story-username">${userStory.username}</div>
-      `;
-      
-      storiesContainer.appendChild(storyEl);
-    }
-  }
-  
-  // Open stories
-  function openStories(userStories) {
-    currentStoryIndex = 0;
-    displayStory(userStories, currentStoryIndex);
-    storyModal.style.display = "flex";
-  }
-  
-  // Display a specific story
-  function displayStory(userStories, index) {
-    if (index < 0 || index >= userStories.length) return;
-    
-    const story = userStories[index];
-    storyAuthor.textContent = story.username;
-    storyView.innerHTML = "";
-    
-    if (story.text) {
-      const textEl = document.createElement("div");
-      textEl.className = "story-text";
-      textEl.textContent = story.text;
-      storyView.appendChild(textEl);
-    }
-    
-    if (story.file) {
-      if (story.type === "video") {
-        const videoEl = document.createElement("video");
-        videoEl.src = story.file;
-        videoEl.controls = true;
-        videoEl.style.maxWidth = "100%";
-        storyView.appendChild(videoEl);
-      } else {
-        const imgEl = document.createElement("img");
-        imgEl.src = story.file;
-        imgEl.style.maxWidth = "100%";
-        storyView.appendChild(imgEl);
-      }
-    }
-    
-    // Update navigation buttons
-    prevStoryBtn.style.visibility = index > 0 ? "visible" : "hidden";
-    nextStoryBtn.style.visibility = index < userStories.length - 1 ? "visible" : "hidden";
-  }
-  
-  // Story navigation
-  prevStoryBtn.addEventListener("click", () => {
-    // In a real app, you'd track which user's stories are being viewed
-    // For simplicity, we'll just close the modal
-    storyModal.style.display = "none";
-  });
-  
-  nextStoryBtn.addEventListener("click", () => {
-    // In a real app, you'd track which user's stories are being viewed
-    // For simplicity, we'll just close the modal
-    storyModal.style.display = "none";
-  });
-  
-  closeStoryBtn.addEventListener("click", () => {
-    storyModal.style.display = "none";
-  });
   
   // Initialize the app
   initAvatarOptions();
   showScreen("contacts");
 </script>
 </body>
-    </html>
+      </html>
